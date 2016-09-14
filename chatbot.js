@@ -88,7 +88,6 @@ var connectToPokemon = function(){
 				nearby = [];
 				hb.cells.forEach(function(cell){
 					if(cell.MapPokemon.length <= 0) return;
-					
 					cell.MapPokemon.forEach(function(pokemon){
 						announcePokemon(pokemon);
 					});
@@ -108,6 +107,7 @@ var handleHeartbeatFailure = function(err){
 };
 
 var announcePokemon = function(pokemon){
+  console.log("Announcing pokemon", pokemon);
 	var upid = pokemon.EncounterId.high + ' ' + pokemon.EncounterId.low;
 	if(encounters.indexOf(upid) != -1) return;
 	encounters.push(upid);
@@ -116,7 +116,9 @@ var announcePokemon = function(pokemon){
 		{ latitude: location.coords.latitude, longitude: location.coords.longitude },
 		{ latitude: pokemon.Latitude, longitude: pokemon.Longitude });
 	var name = pokeGo.pokemonlist[parseInt(pokemon.PokedexTypeId)-1].name;
-	bot.postMessageToChannel('games', 'Pokemon detected: #' + pokemon.PokedexTypeId + ' - ' + name + ' is ' + distance + ' meters away');
+  var emojiname = name.toLowerCase().replace(" ", "").replace("'","").replace("♂","m").replace("♀", "f");
+  var maplink = "<https://maps.google.com/?q=" + pokemon.Latitude + "," + pokemon.Longitude + "|" + distance + " meters away>";
+	bot.postMessageToChannel('pokemongo', 'Pokemon detected: ' + ':pkmn_' + emojiname + ':' + '#' + pokemon.PokedexTypeId + ' - ' + name + ' is '+ maplink);
 }
 
 bot.on('start', function() {
